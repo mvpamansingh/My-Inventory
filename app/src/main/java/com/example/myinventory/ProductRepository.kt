@@ -1,12 +1,14 @@
 package com.example.myinventory
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.*
-
+import kotlinx.coroutines.async
 class ProductRepository(private val productDao: ProductDao) {
    val searchResults = MutableLiveData<List<Product>>()
+    val allProducts: LiveData<List<Product>> = productDao.getAllProducts()
 //
 suspend fun insertProduct(newproduct: Product) {
         coroutineScope {
@@ -24,7 +26,9 @@ suspend fun insertProduct(newproduct: Product) {
         }
     }
     private suspend fun asyncFind(name: String): Deferred<List<Product>?> =
-        coroutineScope.async(Dispatchers.IO) {
-            return@async productDao.findProduct(name)
+        coroutineScope {
+             async {productDao.findProduct(name)  }
+
+
         }
 }
